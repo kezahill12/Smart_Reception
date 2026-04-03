@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-// @RestController means every method returns JSON automatically
-// @RequestMapping sets the base URL for all endpoints in this class
 @RestController
 @RequestMapping("/api/patients")
 @Tag(name = "Patient API", description = "Endpoints for patient management")
