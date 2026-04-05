@@ -7,18 +7,18 @@ SmartReception is a state-of-the-art AI-driven hospital reception system. It int
 
 ## 🏛️ High-Level Architecture
 
-### Monorepo Orchestration: Nx
-The system follows an **Nx-powered Monorepo** architecture. This ensures that the frontend and backend share a unified workspace, benefit from Nx's caching and dependency tracking, and use a consistent command interface.
+### Manual Monorepo Orchestration
+The system follows a **Manual Monorepo** architecture designed for transparency and high maintainability. Instead of complex abstraction layers like Nx, it uses a standard directory structure with unified Docker-based orchestration for development and production.
 
 ### Workspace Structure
 ```text
 Smart_Reception/
 ├── apps/
-│   ├── frontend/       # React + Tailwind CSS
-│   └── backend/        # Spring Boot (Managed via Maven)
-├── packages/           # Common utilities/types
-├── infrastructure/     # Docker, Nginx, DevOps
-└── docker-compose.yml  # Shared orchestration
+│   ├── frontend/       # React (Vite) + Tailwind CSS
+│   └── backend/        # Spring Boot (Maven)
+├── infrastructure/     # Docker, Nginx, DevOps configurations
+├── .env                # Unified environment variables
+└── docker-compose.yml  # Shared orchestration layer
 ```
 
 ```mermaid
@@ -27,32 +27,61 @@ graph LR
         apps[apps/] --> app_fe[frontend]
         apps --> app_be[backend]
         infra[infrastructure/] --> nginx[nginx/]
-        pkg[packages/] --> common[common/]
     end
 ```
 
 ---
 
-## ⚙️ Initialization & Build Guide (Nx Workspace)
+## 🚀 Local Development Guide
 
-To set up this Nx monorepo from scratch:
+To run the full SmartReception stack locally, follow these steps:
 
-### 1. Unified Workspace Initialization
-*   **Command:** `npx create-nx-workspace@latest Smart_Reception --preset=apps`
-*   **Manager:** Nx CLI
+### 1. Prerequisites
+- **Docker & Docker Compose** (Recommended)
+- **Java 17+ & Maven** (For manual backend development)
+- **Node.js 20+ & npm** (For manual frontend development)
 
-### 2. Backend: Java Spring Boot (via Nx Plugin)
-*   **Plugin:** `@nxrocks/nx-spring-boot`
-*   **Command:** `nx g @nxrocks/nx-spring-boot:project server --projectType=application`
-*   **Dependencies:** Web, JPA, Security, Postgres, Lombok, LangChain4j.
+### 2. Environment Setup
+Create a `.env` file in the root directory (use `.env.example` as a template):
+```bash
+cp .env.example .env
+```
+Ensure all required variables like `JWT_SECRET`, `GOOGLE_CLIENT_ID`, etc., are correctly set.
 
-### 3. Frontend: React + Tailwind CSS
-*   **Command:** `nx g @nx/react:app client --bundler=vite --style=css`
-*   **Styling:** Follow standard Nx Tailwind setup.
+### 3. Running with Docker (Recommended)
+The easiest way to start the entire system (Database, Backend, Frontend, and Gateway):
+```bash
+# Build and start all services
+docker compose up --build
 
-### 4. Build & Run (Nx Way)
-*   **Run All:** `nx run-many --target=serve`
-*   **Build All:** `nx run-many --target=build`
+# Start in detached mode
+docker compose up -d
+```
+- **Gateway (Nginx):** [http://localhost:8000](http://localhost:8000)
+- **Backend API:** [http://localhost:8080](http://localhost:8080)
+- **Frontend App:** [http://localhost](http://localhost)
+
+### 4. Running Manually (Standalone Dev)
+If you prefer running services independently for faster iteration:
+
+#### Backend:
+```bash
+cd apps/backend
+mvn spring-boot:run
+```
+
+#### Frontend:
+```bash
+cd apps/frontend
+npm install
+npm run dev
+```
+
+#### Database:
+You can start just the database using Docker:
+```bash
+docker compose up db -d
+```
 
 ---
 

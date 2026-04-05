@@ -344,11 +344,46 @@ A frontend interface will allow staff to interact with the system.
 
 # 🚀 Getting Started
 
-1. Clone the repository
-2. Set up database
-3. Configure environment variables
-4. Run backend server
-5. Connect frontend
+### 1. Prerequisites
+- **Docker Desktop** (Required for the easiest setup)
+- **Java 17+** & **Node.js 20+** (Optional, for manual development)
+
+### 2. Setting up Environment Variables
+Clone the repository and create your `.env` file from the example:
+```bash
+cp .env.example .env
+```
+Open `.env` and fill in the required values (Database credentials, JWT secret, and OAuth IDs).
+
+### 3. Run with Docker (Recommended)
+This will start the Database, Backend (Spring Boot), Frontend (React/Vite), and Nginx Gateway:
+```bash
+docker compose up --build
+```
+Once started, you can access:
+- **Application (Gateway):** [http://localhost:8000](http://localhost:8000)
+- **API Docs (Swagger):** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+### 4. Manual Development Run
+If you want to run the services separately for faster development:
+
+**Backend:**
+```bash
+cd apps/backend
+mvn spring-boot:run
+```
+
+**Frontend:**
+```bash
+cd apps/frontend
+npm install
+npm run dev
+```
+
+**Database Only:**
+```bash
+docker compose up db -d
+```
 
 ---
 
