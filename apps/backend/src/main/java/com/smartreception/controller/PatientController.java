@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class PatientController {
     // GET /api/patients → returns all patients
     @GetMapping
     @Operation(summary = "Get all patients")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'DOCTOR', 'MANAGER')")
     public ResponseEntity<List<PatientResponse>> getAllPatients() {
         return ResponseEntity.ok(patientService.findAll());
     }
@@ -34,6 +36,7 @@ public class PatientController {
     // GET /api/patients/{id} → returns one patient by ID
     @GetMapping("/{id}")
     @Operation(summary = "Get a patient by ID")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'DOCTOR', 'MANAGER')")
     public ResponseEntity<PatientResponse> getPatientById(@PathVariable UUID id) {
         return ResponseEntity.ok(patientService.findById(id));
     }
@@ -42,6 +45,7 @@ public class PatientController {
     // @Valid triggers the validation rules we wrote in PatientRequest
     @PostMapping
     @Operation(summary = "Create a new patient")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'DOCTOR', 'MANAGER')")
     public ResponseEntity<PatientResponse> createPatient(@Valid @RequestBody PatientRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(patientService.save(request));
     }
@@ -49,6 +53,7 @@ public class PatientController {
     // PUT /api/patients/{id} → updates an existing patient
     @PutMapping("/{id}")
     @Operation(summary = "Update a patient")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'DOCTOR', 'MANAGER')")
     public ResponseEntity<PatientResponse> updatePatient(
             @PathVariable UUID id,
             @Valid @RequestBody PatientRequest request) {
@@ -58,6 +63,7 @@ public class PatientController {
     // DELETE /api/patients/{id} → deletes a patient
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a patient")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'DOCTOR', 'MANAGER')")
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
         patientService.delete(id);
         return ResponseEntity.noContent().build(); // returns 204 No Content
