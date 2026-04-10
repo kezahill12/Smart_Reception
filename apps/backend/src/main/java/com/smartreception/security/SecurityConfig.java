@@ -51,11 +51,6 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Patient endpoints:
-                        // Only RECEPTIONIST and MANAGER can create, update, delete
-                        .requestMatchers("POST /api/patients/**").hasAnyRole("RECEPTIONIST", "MANAGER")
-                        .requestMatchers("PUT /api/patients/**").hasAnyRole("RECEPTIONIST", "MANAGER")
-                        .requestMatchers("DELETE /api/patients/**").hasRole("MANAGER")
 
                         // Any other request just needs a valid token (any role)
                         .anyRequest().authenticated()

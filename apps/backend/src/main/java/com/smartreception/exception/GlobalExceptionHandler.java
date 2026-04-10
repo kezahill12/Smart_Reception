@@ -1,6 +1,5 @@
 package com.smartreception.exception;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,21 +10,24 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-// @RestControllerAdvice means: "watch ALL controllers and catch their errors"
-// Instead of a crash, we return a clean JSON error message
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Triggered when a record is not found (e.g. patient with that ID does not exist)
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex) {
+    // 404 - record not found (patient, doctor, appointment does not exist)
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    // Triggered when @Valid fails (e.g. empty name, bad email format)
+    // 409 - duplicate record (same email or phone already exists)
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateResourceException ex) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    // 400 - validation failed (@Valid check failed on a request field)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
-        // Collect all field errors into one message
         String message = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -34,6 +36,13 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.BAD_REQUEST, message);
     }
 
+    // 500 - any other unexpected error we did not anticipate
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+    }
+
+    // Builds the error response body that gets sent to the frontend
     private ResponseEntity<Map<String, Object>> buildError(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now().toString());
